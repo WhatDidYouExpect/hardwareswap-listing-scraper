@@ -1,8 +1,8 @@
-<h1 style="text-align:center">HardwareSwap Listing Scraper</h1>
+# HardwareSwap Listing Scraper
 
-This README isn't the best but whatever, it works. 😂  
-Just make sure to read the whole thing!
+This README isn't anything amazing but everything you need should be here.
 
+# Getting up and running with the script
 ## Prerequisites
 Make sure you have these installed before proceeding:
 - [Python](https://python.org)
@@ -106,7 +106,22 @@ To set up the script so you get push notifications for every new HWS post (fireh
    2. `venv\Scripts\Activate.ps1`
    3. `pip install -r requirements.txt`
 2. And finally to start the script, run `py scraper.py`.
-Pro Tip: If you're looking for a specific item, enable Push Notifications and Match Mode (), and leave the script running in the background, so you get notified when a listing gets posted that meets your criteria!
+Pro Tip: If you're looking for a specific item, enable Push Notifications and Match Mode (Follow the instructions in section "Configuring the script"), and leave the script running in the background, so you get notified when a listing gets posted that meets your criteria!
 
 ### Linux
 Haven't written Linux instructions yet but if you're running linux you probably know what to do based on the Windows instructions. 
+
+# Issues
+If something's broken, confusing, or just not working right, [open an issue!](https://github.com/PowerPCFan/hardwareswap-listing-scraper/issues).
+
+Make sure to include these details so it's easier to debug:
+- What OS you're using
+- What you were trying to do
+- If there was an error, what error you saw (copy-paste the full message and put it in a codeblock)
+- Your config.py file (be sure to remove your `REDDIT_SECRET`, `REDDIT_ID`, and `topic_name` before sharing!!)
+
+I’ll try to respond quickly, but if you know the fix already and want to contribute, feel free to submit a pull request instead, explaining the fix and what you changed.
+
+# Contributing
+Want to help improve this script? Go for it!  
+Just fork the repo, make your changes, and open a pull request. Please try your best to explain what you changed so it's easier for me to review. 
