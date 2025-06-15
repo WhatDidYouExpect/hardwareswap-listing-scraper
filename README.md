@@ -66,7 +66,6 @@ Haven't written macOS instructions yet lmao
 - Since you're using Match Mode, you need to define what you're looking for. 
 - In the config.py file, I provided examples on how to properly define the `author_has` and `author_wants` variables - just change my examples to whatever you want.
 - You can have as many or as little strings in the `author_has` and `author_wants` lists, as long as they have at least one. So, both of these are valid, as long as the last string doesn't have a comma after it:
-  - 
   ```python
     author_has = [
       "4090",
