@@ -101,10 +101,10 @@ To set up the script so you get push notifications for every new HWS post (fireh
 ## Script Run Instructions
 ### Windows
 1. In the PowerShell terminal you left open from earlier, run these commands:
-   1. `py -m venv venv`
+   1. `python -m venv venv`
    2. `venv\Scripts\Activate.ps1`
    3. `pip install -r requirements.txt`
-2. And finally to start the script, run `py scraper.py`.
+2. And finally to start the script, run `python scraper.py`.
 Pro Tip: If you're looking for a specific item, enable Push Notifications and Match Mode (Follow the instructions in section "Configuring the script"), and leave the script running in the background, so you get notified when a listing gets posted that meets your criteria!
 
 ### Linux

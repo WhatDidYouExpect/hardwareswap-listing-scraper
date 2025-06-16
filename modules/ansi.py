@@ -1,7 +1,22 @@
 import os
 import sys
 import ctypes
-import platform
+
+def ansi_codes():
+    ANSI = "\033["
+    RESET = f"{ANSI}0m"
+    RED = f"{ANSI}31m"
+    GREEN = f"{ANSI}32m"
+    BLUE = f"{ANSI}34m"
+    YELLOW = f"{ANSI}33m"
+    WHITE = f"{ANSI}37m"
+    PURPLE = f"{ANSI}35m"
+    CYAN = f"{ANSI}36m"
+    LIGHT_CYAN = f"{ANSI}96m"
+    SUPER_LIGHT_CYAN = f"{ANSI}38;5;153m"
+    ORANGE = f"{ANSI}38;5;208m"
+    
+    return RESET, RED, GREEN, BLUE, YELLOW, WHITE, PURPLE, CYAN, LIGHT_CYAN, SUPER_LIGHT_CYAN, ORANGE
 
 # Thanks to ChatGPT for this lmao
 
