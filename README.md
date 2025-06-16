@@ -91,7 +91,11 @@ Haven't written macOS instructions yet lmao
 ### Receive Push Notifications for posts (Optional, but recommended!)
 To set up the script so you get push notifications for every new HWS post (firehose mode) or every new HWS post that matches your criteria (match mode), follow these steps:
 1. In your config.py, uncomment (remove the `#`) the line `push_notifications = True`.
-2. Download the ntfy app on your phone. Links: [Apple App Store](https://apps.apple.com/us/app/ntfy/id1625396347) &nbsp;&nbsp; [Google Play Store](https://play.google.com/store/apps/details?id=io.heckel.ntfy)
+2. Download the ntfy app on your phone. Links: 
+   - [Apple App Store](https://apps.apple.com/us/app/ntfy/id1625396347)
+   - [Google Play Store](https://play.google.com/store/apps/details?id=io.heckel.ntfy)
+   - [Web App (no downloads required)](https://ntfy.sh/app)
+      - Note: If you would like Markdown support on mobile (clickable links, formatted text, etc), use the ntfy Web App, and add it to your Home Screen to receive notifications. 
 3. Open the app, and allow notifications.
 4. Press the plus button to create a topic. Name it something randomized and secure. 
 5. In your config.py, insert your topic name between the quotes after `topic_name`. 

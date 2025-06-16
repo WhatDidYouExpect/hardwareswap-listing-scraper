@@ -35,17 +35,19 @@ def get_karma_string(author):
 
 def send_notification(text, url):
     headers={
-        "Click": url, # notification click action
-        "Title": f"New listing on r/hardwareswap",
-        "Priority": "3" # 1 = min, 2 = low, 3 = default, 4 = high, 5 = max
+        "X-Click": url, # notification click action
+        "X-Title": f"New listing on r/hardwareswap",
+        "X-Priority": "3", # 1 = min, 2 = low, 3 = default, 4 = high, 5 = max
+        "X-Markdown": "yes"
     }
     
-    data = text.encode(encoding='utf-8')
+    data = f"{text}\n\nListing URL: [{url}]({url})"
+    data = data.encode(encoding='utf-8')
     
     try:
         requests.post(
             "https://ntfy.sh/" + c.topic_name,
-            data=f"{data}\n\nListing URL: {url}",
+            data=data,
             headers=headers
         )
     # just some generic error handling for common requests errors:
@@ -71,8 +73,7 @@ def print_new_post(subreddit, author, h, w, url, utc_date, flair, title):
     print(f"Posted {WHITE}{reddit_timestamp_creator(utc_date)}{RESET}\n")
     
     if c.push_notifications and c.topic_name:
-        text = title
-        send_notification(text, url)
+        send_notification(title, url)
 
 # def reddit_timestamp_creator(unix_epoch):
 #     now = int(time.time())
@@ -166,7 +167,7 @@ def main():
     print(f"{GREEN}Connected successfully.{RESET}")
 
     print_welcome_text()
-
+    
     if c.firehose:
         firehose_mode(subreddit)
     elif c.match:
