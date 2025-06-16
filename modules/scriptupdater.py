@@ -1,3 +1,4 @@
+import sys
 import os
 import shutil
 import subprocess
@@ -43,6 +44,7 @@ def update_repo():
     # git pull
     subprocess.run(["git", "pull"], check=True)
     print(f"{GREEN}Update Successful!{RESET}\nPlease restart the script by running `python scraper.py`.")
+    sys.exit(0)
 
 def check_for_updates():
     print(f"{BLUE}Checking for updates...{RESET}")
