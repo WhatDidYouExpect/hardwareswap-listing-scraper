@@ -40,10 +40,12 @@ def send_notification(text, url):
         "Priority": "3" # 1 = min, 2 = low, 3 = default, 4 = high, 5 = max
     }
     
+    data = text.encode(encoding='utf-8')
+    
     try:
         requests.post(
             "https://ntfy.sh/" + c.topic_name,
-            data=text.encode(encoding='utf-8'),
+            data=f"{data}\n\nListing URL: {url}",
             headers=headers
         )
     # just some generic error handling for common requests errors:
