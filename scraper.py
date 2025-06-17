@@ -12,14 +12,11 @@ RESET, RED, GREEN, BLUE, YELLOW, WHITE, PURPLE, CYAN, LIGHT_CYAN, SUPER_LIGHT_CY
 
 def check_variables():
     if not c.reddit_id or not c.reddit_secret or not c.reddit_username:
-        print(f"{RED}Error: There are missing variables in your config.py.\nPlease ensure all values are filled in using the instructions found in the README.{RESET}")
-        return
+        raise ValueError("There are missing variables in your config.py.\nPlease ensure all values are filled in using the instructions found in the README.")
     if c.firehose == c.match:
-        print(f"{RED}Error: You cannot have both firehose and match mode enabled or disabled at the same time.{RESET}")
-        return
+        raise ValueError("You cannot have both firehose and match mode enabled or disabled at the same time.")
     if c.match and (c.author_has == [] or c.author_wants == []):
-        print(f"{RED}Error: You have match mode enabled, but have not specified any author_has or author_wants values.\nPlease switch to firehose mode to view all posts, or insert values in your config.py.{RESET}")
-        return
+        raise ValueError("You have match mode enabled, but have not specified any author_has or author_wants values.\nPlease switch to firehose mode to view all posts, or insert values in your config.py.")
 
 def strip_trades_prefix(flair):
     if flair and flair.startswith("Trades: "):
@@ -152,7 +149,11 @@ def main():
     scriptupdater.check_for_updates()
     
     print(f"{YELLOW}Initializing variables...{RESET}")
-    check_variables()
+    try:
+        check_variables()
+    except ValueError as e:
+        print(f"{RED}{e}{RESET}")
+        sys.exit(1)
     
     print(f"{YELLOW}Connecting to Reddit...{RESET}")
 
