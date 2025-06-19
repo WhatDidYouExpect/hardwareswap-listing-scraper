@@ -16,6 +16,7 @@ current_version: Version = get_version()
 def patch_config():
     name = "Config.py Patch"
 
+    # Run on version 1.1.3 and older to ensure that older versions of the script get migrated to the new config structure for the push notifications var
     if current_version <= Version("1.1.3"):
         return None
 
