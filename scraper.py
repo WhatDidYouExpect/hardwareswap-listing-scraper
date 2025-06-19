@@ -5,8 +5,9 @@ import time
 from datetime import datetime
 import sys
 import requests
-import modules.scriptupdater as scriptupdater
+import modules.updater as updater
 from modules.ansi import ansi_supported, ansi_codes
+import modules.patches as patchutil
 
 RESET, RED, GREEN, BLUE, YELLOW, WHITE, PURPLE, CYAN, LIGHT_CYAN, SUPER_LIGHT_CYAN, ORANGE = ansi_codes() if ansi_supported() else ("",) * 11
 
@@ -17,11 +18,18 @@ def check_variables():
         raise ValueError("You cannot have both firehose and match mode enabled or disabled at the same time.")
     if c.match and (c.author_has == [] or c.author_wants == []):
         raise ValueError("You have match mode enabled, but have not specified any author_has or author_wants values.\nPlease switch to firehose mode to view all posts, or insert values in your config.py.")
+    if c.push_notifications and not c.topic_name:
+        raise ValueError("You have push notifications enabled, but have not specified a topic name.\nPlease set a topic name in your config.py file - see the README for instructions.")
 
-def strip_trades_prefix(flair):
-    if flair and flair.startswith("Trades: "):
-        return flair.removeprefix("Trades: ")
-    return flair
+def get_trades_number(flair: str) -> str:    
+    if isinstance(flair, str) and flair and flair.startswith("Trades: "):
+        trades = flair.removeprefix("Trades: ").strip().lower()
+    elif isinstance(flair, str):
+        trades = flair.strip().lower()
+    else:
+        trades = "none"
+        
+    return "0" if trades == "none" else trades
 
 def get_karma_string(author):
     j = reddit_account_age_timestamp_generator(author.created_utc)
@@ -62,8 +70,7 @@ def send_notification(text, url):
 def print_new_post(subreddit, author, h, w, url, utc_date, flair, title):
     j, pk, ck = get_karma_string(author)
     
-    trades = strip_trades_prefix(flair)
-    trades = "0" if trades == "None" else trades
+    trades = get_trades_number(flair)
     
     print(f"New post by {BLUE}u/{author.name}{RESET} ({YELLOW}{trades}{RESET} trades | joined {CYAN}{j}{RESET} | post karma {ORANGE}{pk}{RESET} | comment karma {PURPLE}{ck}{RESET}):")
     print(f"[H]: {GREEN}{h}{RESET}\n[W]: {RED}{w}{RESET}\nURL: {SUPER_LIGHT_CYAN}{url}{RESET}")
@@ -71,6 +78,9 @@ def print_new_post(subreddit, author, h, w, url, utc_date, flair, title):
     
     if c.push_notifications and c.topic_name:
         send_notification(title, url)
+        
+    # Sleep for a half second to make sure the script doesn't break lol
+    time.sleep(0.5)
 
 # def reddit_timestamp_creator(unix_epoch):
 #     now = int(time.time())
@@ -146,16 +156,18 @@ def match_mode(subreddit):
             print_new_post(subreddit, submission.author, h, w, submission.url, submission.created_utc, submission.author_flair_text, submission.title)
 
 def main():
-    scriptupdater.check_for_updates()
+    updater.check_for_updates()
+    patchutil.apply_patches()
     
-    print(f"{YELLOW}Initializing variables...{RESET}")
+    print(f"{BLUE}Initializing variables...{RESET}")
     try:
         check_variables()
+        print('') # print a singular new line if check_variables() passes in order to maintain spacing between the print statements
     except ValueError as e:
-        print(f"{RED}{e}{RESET}")
+        print(f"{RED}{e}{RESET}\n")
         sys.exit(1)
     
-    print(f"{YELLOW}Connecting to Reddit...{RESET}")
+    print(f"{BLUE}Connecting to Reddit...{RESET}")
 
     reddit = praw.Reddit(
         client_id=c.reddit_id,

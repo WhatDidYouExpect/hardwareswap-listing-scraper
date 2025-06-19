@@ -11,30 +11,32 @@ Make sure you have these installed before proceeding:
 
 ## Script Download Instructions
 ### Windows
-1. Open up a PowerShell window. (You can do this by pressing the Windows key, and searching for "PowerShell" - it will be called "Windows PowerShell" or "PowerShell 7".)
-2. Type in `git clone https://github.com/PowerPCFan/hardwareswap-listing-scraper.git`
-3. Type `cd hardwareswap-listing-scraper` when that's done.  
+1. Open up a PowerShell window. (You can do this by pressing the Windows key, and searching for "PowerShell" - it will be called "Windows PowerShell" or "PowerShell 7".) **Do not open PowerShell as administrator!**
+2. Ensure you're in your user profile by typing `cd $env:userprofile`. 
+3. Type in `git clone https://github.com/PowerPCFan/hardwareswap-listing-scraper.git` to download all of the necessary files.
+4. Once that's done, type `cd hardwareswap-listing-scraper` to enter the folder for HardwareSwap Listing Scraper.  
 **IMPORTANT: DO NOT CLOSE THIS POWERSHELL WINDOW!**
 
 ### Linux
-Haven't written Linux instructions yet lmao
+Haven't written Linux instructions yet, sorry!
 
 ### macOS
-Haven't written macOS instructions yet lmao
+Haven't written macOS instructions yet, sorry!
 
 ## Preparing the script
 1. Go to [https://www.reddit.com/prefs/apps](https://www.reddit.com/prefs/apps). Press **"are you a developer? create an app..."**
 2. Name it **"HardwareSwap Listing Scraper"** and set the app type to **Script**. 
 3. Leave the description blank.
-4. Set the redirect URI to **http://localhost:8080** (placeholder URL). 
+4. Set the redirect URI to **http://localhost:8080** (this is just a placeholder URL - you could probably use google.com as well and it should still work!). 
 5. Complete the reCaptcha and press **create app**.
 6. Rename the file `example_config.py` to `config.py`.
-7. Fill in your config.py using the instructions below. **Make sure that you fill in every value properly.**
+7. Fill in your config.py using the "Configuring the script" instructions below. **Make sure that you fill in every value properly.**
 
 ## Configuring the script
 ### Reddit Secret Setup (REQUIRED)
 - Go to [https://www.reddit.com/prefs/apps](https://www.reddit.com/prefs/apps).
-- Find your secret and ID using this example (you may have to press edit to view the secret):  
+- Locate the app 'HardwareSwap Listing Scraper' you created earlier.
+- Find your secret and ID using this example photo (you may have to press "edit" to view the secret):  
 ![Example image for how to find the ID and secret](https://raw.githubusercontent.com/PowerPCFan/hardwareswap-listing-scraper/refs/heads/main/assets/1.png)
 - Open your config.py and find `reddit_secret` and `reddit_id`.
 - Between the quotation marks after `reddit_secret = `, paste in your reddit secret.
@@ -90,7 +92,7 @@ Haven't written macOS instructions yet lmao
 
 ### Receive Push Notifications for posts (Optional, but recommended!)
 To set up the script so you get push notifications for every new HWS post (firehose mode) or every new HWS post that matches your criteria (match mode), follow these steps:
-1. In your config.py, uncomment (remove the `#`) the line `push_notifications = True`.
+1. In your config.py, change `push_notifications` from `False` to `True`, so `push_notifications = False` becomes `push_notifications = True`.
 2. Download the ntfy app on your phone. Links: 
    - [Apple App Store](https://apps.apple.com/us/app/ntfy/id1625396347)
    - [Google Play Store](https://play.google.com/store/apps/details?id=io.heckel.ntfy)
@@ -104,11 +106,12 @@ To set up the script so you get push notifications for every new HWS post (fireh
 
 ## Script Run Instructions
 ### Windows
+***Note: For the following commands, if `py` doesn't work, try `python` or `python3`.***
 1. In the PowerShell terminal you left open from earlier, run these commands:
-   1. `python -m venv venv`
+   1. `py -m venv venv`
    2. `venv\Scripts\Activate.ps1`
    3. `pip install -r requirements.txt`
-2. And finally to start the script, run `python scraper.py`.
+2. And finally to start the script, run `py scraper.py`.
 Pro Tip: If you're looking for a specific item, enable Push Notifications and Match Mode (Follow the instructions in section "Configuring the script"), and leave the script running in the background, so you get notified when a listing gets posted that meets your criteria!
 
 ### Linux

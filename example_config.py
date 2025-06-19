@@ -22,5 +22,5 @@ author_wants = [
 retrieve_older_posts = False
 
 # Push Notifications
-#push_notifications = True
+push_notifications = False
 topic_name = ""
