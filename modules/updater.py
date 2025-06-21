@@ -55,7 +55,7 @@ def update_repo():
     sys.exit(0)
 
 def check_for_updates():
-    print(f"{BLUE}Checking for updates...{RESET}")
+    print(f"\n{BLUE}Checking for updates...{RESET}")
     
     try:
         local_version = read_local_version()

@@ -1,0 +1,124 @@
+import importlib.util
+import json
+import os
+from typing import List
+from modules.ansi import ansi_supported, ansi_codes
+from dataclasses import dataclass
+
+RESET, RED, GREEN, BLUE, YELLOW, WHITE, PURPLE, CYAN, LIGHT_CYAN, SUPER_LIGHT_CYAN, ORANGE = ansi_codes() if ansi_supported() else ("",) * 11
+
+CONFIG_PY = "config.py"
+CONFIG_JSON = "config.json"
+
+def config_py_exists():
+    return os.path.exists(CONFIG_PY)
+
+def convert_py_to_json(config_py=CONFIG_PY, output_json=CONFIG_JSON):
+    if config_py_exists():
+        try:
+            print(f"{YELLOW}Config.py file detected! This script now uses config.json. Attempting to migrate config.py -> config.json...{RESET}")
+            
+            # load config.py (chatgpt generated lol)
+            spec = importlib.util.spec_from_file_location("config", config_py)
+            if spec is None:
+                raise ImportError(f"{RED}Error: Failed to load spec from {config_py}{RESET}")
+
+            if spec.loader is None:
+                raise ImportError(f"{RED}Error: Spec loader is None for {config_py}{RESET}")
+
+            config = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(config)
+
+            # extract vars
+            config_dict = {
+                k: v for k, v in vars(config).items()
+                if not k.startswith("__") and not callable(v)
+            }
+
+            # make config.json file
+            with open(output_json, "w") as f:
+                json.dump(config_dict, f, indent=4)
+                
+            # remove config.py file
+            os.remove(CONFIG_PY)
+            
+            print(f"{GREEN}Successfully migrated config.py to config.json!{RESET}")
+        except Exception as e:
+            print(f"{RED}Error converting config.py to config.json: {e}{RESET}")
+
+def ensure_all_values_are_present():
+    default_config = {
+        "reddit_id": "",
+        "reddit_secret": "",
+        "reddit_username": "",
+        "firehose": True,
+        "match": False,
+        "author_has": [
+            "3060",
+            "3060 Ti"
+        ],
+        "author_wants": [
+            "PayPal"
+        ],
+        "retrieve_older_posts": False,
+        "tinyurl": False,
+        "push_notifications": False,
+        "topic_name": "",
+        "sms": False,
+        "gmail_address": "",
+        "app_password": "",
+        "sms_gateway": "",
+        "phone_number": ""
+    }
+    
+    # load config.json
+    with open(CONFIG_JSON, 'r') as f:
+        config = json.load(f)
+
+    # add missing keys to config.json and set them to the default values
+    updated = False
+    for key, default_value in default_config.items():
+        if key not in config:
+            print(f"{RED}Key {key} was not found in your config.json file. Adding...{RESET}")
+            config[key] = default_value
+            updated = True
+
+    if updated:
+        with open(CONFIG_JSON, 'w') as f:
+            json.dump(config, f, indent=4)
+
+@dataclass
+class Config:
+    # type stuff
+    reddit_id: str
+    reddit_secret: str
+    reddit_username: str
+
+    firehose: bool
+    match: bool
+
+    author_has: List[str]
+    author_wants: List[str]
+
+    retrieve_older_posts: bool
+    
+    tinyurl: bool
+
+    push_notifications: bool
+    topic_name: str
+
+    sms: bool
+    gmail_address: str
+    app_password: str
+    sms_gateway: str
+    phone_number: str
+
+    # function to load the vars from config.json
+    @staticmethod
+    # def load(json_path=CONFIG_JSON) -> "Config":
+    def load(json_path="config.json") -> "Config":
+        if not os.path.exists(json_path):
+            raise FileNotFoundError(f"{RED}Error: {json_path} not found.{RESET}")
+        with open(json_path) as f:
+            data = json.load(f)
+        return Config(**data)
