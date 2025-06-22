@@ -6,7 +6,7 @@ import sys
 import requests
 import modules.updater as updater
 import modules.config_tools as conftools
-from modules.tinyurl import TinyURL
+from modules.url_shorteners import TinyURL, SLExpectOVH, SLPowerPCFanXYZ
 from modules.gmail import Gmail
 from modules.ansi import ansi_supported, ansi_codes
 
@@ -55,8 +55,9 @@ def check_variables():
     if c.push_notifications and not c.topic_name:
         raise ValueError("You have push notifications enabled, but have not specified a topic name.\nPlease set a topic name in your config.json file - see the README for instructions.")
     if c.sms and (not c.gmail_address or not c.app_password or not c.sms_gateway or not c.phone_number):
-        raise ValueError("You have SMS notifications enabled but have not specified all of the required values. Please ensure your config.json has all the proper values filled in.")
-
+        raise ValueError("You have SMS notifications enabled but have not specified all of the required values.\nPlease ensure your config.json has all the proper values filled in.")
+    if sum(bool(x) for x in [c.tinyurl, c.sl_expect_ovh, c.sl_powerpcfan_xyz]) > 1:
+        raise ValueError("You cannot have more than one URL shortener enabled at once.\nPlease choose one and disable the others in your config.json file.")
 
 def get_trades_number(flair: str) -> str:
     if isinstance(flair, str) and flair and flair.startswith("Trades: "):
@@ -120,6 +121,12 @@ def print_new_post(subreddit, author, h, w, url, utc_date, flair, title):
     if c.tinyurl:
         tinyurl = TinyURL()
         url = tinyurl.shorten(url, timeout=8)
+    elif c.sl_expect_ovh:
+        expect = SLExpectOVH()
+        url = expect.shorten(url, timeout=8)
+    elif c.sl_powerpcfan_xyz:
+        ppc = SLPowerPCFanXYZ()
+        url = ppc.shorten(url, timeout=8)
     else:
         url = url
     

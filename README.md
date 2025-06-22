@@ -95,10 +95,20 @@ Haven't written macOS instructions yet, sorry!
 - If set to `true`, the script will retrieve the last 100 posts (firehose mode) or the posts that meet your criteria within the last 100 posts (match mode). 
 - If set to `false` (default), the script will only retrieve new posts that are posted while the script is running. 
 
-### tinyurl (Optional)
-- If set to `true`, the URLs used in notifications, SMS messages, and console output will be tinyurl.com links made with the TinyURL URL shortener.
-  - Note: Some carriers may flag SMS messages containing shortened URLs as spam. If you set up SMS and you have TinyURL enabled, and your messages aren't going through, try disabling it.
-- If set to `false` (default), the script will use reddit.com URLs.
+### URL shortener (Optional)
+*Note: Some carriers may flag SMS messages containing shortened URLs as spam. If you set up SMS and you have TinyURL enabled, and your messages aren't going through, try disabling it.*  
+
+- **tinyurl**
+  - If set to `true`, the URLs used in notifications, SMS messages, and console output will be tinyurl.com links made with the [TinyURL](https://tinyurl.com) URL shortener.
+  - If set to `false` (default), the script will use reddit.com URLs.
+
+- **sl_expect_ovh**
+  - If set to `true`, the URLs used in notifications, SMS messages, and console output will be sl.expect.ovh links made with the [https://sl.expect.ovh](https://sl.expect.ovh) URL shortener.
+  - If set to `false` (default), the script will use reddit.com URLs.
+
+- **sl_powerpcfan_xyz (BETA)**
+  - If set to `true`, the URLs used in notifications, SMS messages, and console output will be sl.powerpcfan.xyz links made with my URL shortener [https://sl.powerpcfan.xyz](https://sl.powerpcfan.xyz).
+  - If set to `false` (default), the script will use reddit.com URLs.
 
 ### Receive Push Notifications for posts (Optional, but recommended!)
 To set up the script so you get push notifications for every new HWS post (firehose mode) or every new HWS post that matches your criteria (match mode), follow these steps:

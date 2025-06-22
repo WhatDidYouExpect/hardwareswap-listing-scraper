@@ -3,4 +3,4 @@ config.py
 config.json
 *.pyc
 **/__pycache__/
-version-*-backup
+/version-*-backup

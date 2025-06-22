@@ -62,6 +62,8 @@ def ensure_all_values_are_present():
         ],
         "retrieve_older_posts": False,
         "tinyurl": False,
+        "sl_expect_ovh": False,
+        "sl_powerpcfan_xyz": False,
         "push_notifications": False,
         "topic_name": "",
         "sms": False,
@@ -103,7 +105,9 @@ class Config:
     retrieve_older_posts: bool
     
     tinyurl: bool
-
+    sl_expect_ovh: bool
+    sl_powerpcfan_xyz: bool
+    
     push_notifications: bool
     topic_name: str
 
