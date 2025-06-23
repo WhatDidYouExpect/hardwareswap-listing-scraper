@@ -1,16 +1,18 @@
-import praw
 import re as regexp
 import time
 from datetime import datetime
 import sys
-import requests
 import modules.updater as updater
 import modules.config_tools as conftools
+import modules.dependency_checker as depchecker
+import modules.splash as splash
 from modules.url_shorteners import TinyURL, SLExpectOVH, SLPowerPCFanXYZ
 from modules.gmail import Gmail
 from modules.ansi import ansi_supported, ansi_codes
+# Other imports are at the bottom after the checks to make sure all dependencies are installed 
 
-RESET, RED, GREEN, BLUE, YELLOW, WHITE, PURPLE, CYAN, LIGHT_CYAN, SUPER_LIGHT_CYAN, ORANGE = ansi_codes() if ansi_supported() else ("",) * 11
+ansi_is_supported = ansi_supported()
+RESET, RED, GREEN, BLUE, YELLOW, WHITE, PURPLE, CYAN, LIGHT_CYAN, SUPER_LIGHT_CYAN, ORANGE = ansi_codes() if ansi_is_supported else ("",) * 11
 
 def main():
     updater.check_for_updates()
@@ -26,9 +28,9 @@ def main():
     print(f"{BLUE}Connecting to Reddit...{RESET}")
 
     reddit = praw.Reddit(
-        client_id=c.reddit_id,
-        client_secret=c.reddit_secret,
-        user_agent=f"script:hardwareswap-listing-scraper (by u/{c.reddit_username})"
+        client_id=config.reddit_id,
+        client_secret=config.reddit_secret,
+        user_agent=f"script:hardwareswap-listing-scraper (by u/{config.reddit_username})"
     )
     
     subreddit = reddit.subreddit("hardwareswap")
@@ -37,26 +39,26 @@ def main():
 
     print_welcome_text()
     
-    if c.firehose:
+    if config.firehose:
         firehose_mode(subreddit)
-    elif c.match:
+    elif config.match:
         match_mode(subreddit)
     else:
         print(f"{RED}\nError: An unknown error occurred. Please ensure that your config.json file is properly set up. {RESET}")
         return
 
 def check_variables():
-    if not c.reddit_id or not c.reddit_secret or not c.reddit_username:
+    if not config.reddit_id or not config.reddit_secret or not config.reddit_username:
         raise ValueError("There are missing variables in your config.json.\nPlease ensure all values are filled in using the instructions found in the README.")
-    if c.firehose == c.match:
+    if config.firehose == config.match:
         raise ValueError("You cannot have both firehose and match mode enabled or disabled at the same time.")
-    if c.match and not (c.author_has or not c.author_wants):
+    if config.match and not (config.author_has or not config.author_wants):
         raise ValueError("You have match mode enabled, but have not specified any values for the author_has or author_wants keys.\nPlease switch to firehose mode to view all posts, or insert values in your config.json.")
-    if c.push_notifications and not c.topic_name:
+    if config.push_notifications and not config.topic_name:
         raise ValueError("You have push notifications enabled, but have not specified a topic name.\nPlease set a topic name in your config.json file - see the README for instructions.")
-    if c.sms and (not c.gmail_address or not c.app_password or not c.sms_gateway or not c.phone_number):
+    if config.sms and (not config.gmail_address or not config.app_password or not config.sms_gateway or not config.phone_number):
         raise ValueError("You have SMS notifications enabled but have not specified all of the required values.\nPlease ensure your config.json has all the proper values filled in.")
-    if sum(bool(x) for x in [c.tinyurl, c.sl_expect_ovh, c.sl_powerpcfan_xyz]) > 1:
+    if sum(bool(x) for x in [config.tinyurl, config.sl_expect_ovh, config.sl_powerpcfan_xyz]) > 1:
         raise ValueError("You cannot have more than one URL shortener enabled at once.\nPlease choose one and disable the others in your config.json file.")
 
 def get_trades_number(flair: str) -> str:
@@ -89,7 +91,7 @@ def send_notification(text, shorturl):
     
     try:
         requests.post(
-            "https://ntfy.sh/" + c.topic_name,
+            "https://ntfy.sh/" + config.topic_name,
             data=data,
             headers=headers
         )
@@ -106,9 +108,9 @@ def send_notification(text, shorturl):
         print(f"{RED}An unexpected error occurred while sending notification: {e}{RESET}")
         
 def send_sms(shorturl):
-    gmail = Gmail(c.gmail_address, c.app_password)
+    gmail = Gmail(config.gmail_address, config.app_password)
 
-    recipient = f"{c.phone_number}@{c.sms_gateway}"
+    recipient = f"{config.phone_number}@{config.sms_gateway}"
     subject = "" # no subject
     body = f"New listing on r/hardwareswap: {shorturl}"
 
@@ -118,13 +120,13 @@ def print_new_post(subreddit, author, h, w, url, utc_date, flair, title):
     j, pk, ck = get_karma_string(author)
     trades = get_trades_number(flair)
     
-    if c.tinyurl:
+    if config.tinyurl:
         tinyurl = TinyURL()
         url = tinyurl.shorten(url, timeout=8)
-    elif c.sl_expect_ovh:
+    elif config.sl_expect_ovh:
         expect = SLExpectOVH()
         url = expect.shorten(url, timeout=8)
-    elif c.sl_powerpcfan_xyz:
+    elif config.sl_powerpcfan_xyz:
         ppc = SLPowerPCFanXYZ()
         url = ppc.shorten(url, timeout=8)
     else:
@@ -134,10 +136,10 @@ def print_new_post(subreddit, author, h, w, url, utc_date, flair, title):
     print(f"[H]: {GREEN}{h}{RESET}\n[W]: {RED}{w}{RESET}\nURL: {SUPER_LIGHT_CYAN}{url}{RESET}")
     print(f"Posted {WHITE}{reddit_timestamp_creator(utc_date)}{RESET}\n")
     
-    if c.push_notifications:
+    if config.push_notifications:
         send_notification(title, url)
         
-    if c.sms:
+    if config.sms:
         send_sms(url)
         
     # Sleep for a half second to make sure the script doesn't break lol
@@ -185,11 +187,13 @@ def reddit_account_age_timestamp_generator(unix_epoch):
 
 def print_welcome_text():
     welcome = f"Welcome to the HardwareSwap Listing Scraper, "
-    username = f"u/{c.reddit_username}!"
+    username = f"u/{config.reddit_username}!"
     dashes = "-" * (len(welcome) + len(username))
     print(f"\n{dashes}")
+    splash.print_splash_text(WHITE=WHITE, BLUE=BLUE, RESET=RESET, color=ansi_is_supported)
+    print(f"\n{dashes}")
     print(f"{welcome}{BLUE}{username}{RESET}")
-    print(f"Mode: {WHITE}{'Firehose' if c.firehose else 'Match'}{RESET}")
+    print(f"Mode: {WHITE}{'Firehose' if config.firehose else 'Match'}{RESET}")
     print(f"Press {YELLOW}Ctrl+C{RESET} to exit.")
     print(f"{dashes}\n")
 
@@ -202,16 +206,15 @@ def parse_have_want(title):
     return h, w
 
 def firehose_mode(subreddit):    
-    for submission in subreddit.stream.submissions(skip_existing = not c.retrieve_older_posts):
+    for submission in subreddit.stream.submissions(skip_existing = not config.retrieve_older_posts):
         h, w = parse_have_want(submission.title)
         print_new_post(subreddit, submission.author, h, w, submission.url, submission.created_utc, submission.author_flair_text, submission.title)
 
 def match_mode(subreddit):
-    # for submission in subreddit.stream.submissions(skip_existing=True):
-    for submission in subreddit.stream.submissions(skip_existing = not c.retrieve_older_posts):
+    for submission in subreddit.stream.submissions(skip_existing = not config.retrieve_older_posts):
         h, w = parse_have_want(submission.title)
-        author_has_lower = [s.lower() for s in c.author_has]
-        author_wants_lower = [s.lower() for s in c.author_wants]
+        author_has_lower = [s.lower() for s in config.author_has]
+        author_wants_lower = [s.lower() for s in config.author_wants]
 
         if any(s in h.lower() for s in author_has_lower) and any(s in w.lower() for s in author_wants_lower):
             print_new_post(subreddit, submission.author, h, w, submission.url, submission.created_utc, submission.author_flair_text, submission.title)
@@ -221,7 +224,12 @@ if __name__ == "__main__":
         # check if config.py exists and if it does, convert to config.json
         conftools.convert_py_to_json()
         conftools.ensure_all_values_are_present()
-        c = conftools.Config.load()
+        
+        depchecker.check_dependencies()
+        import praw
+        import requests
+        
+        config = conftools.Config.load()
         
         main()
     except KeyboardInterrupt:
