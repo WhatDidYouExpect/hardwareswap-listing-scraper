@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import re as regexp
 import time
 from datetime import datetime
@@ -21,7 +23,7 @@ local_version = versioning_tools.get_local_version()
 
 def main():
     updater.check_for_updates()
-    
+
     print(f"{BLUE}Initializing variables...{RESET}")
     try:
         check_variables()
@@ -29,7 +31,7 @@ def main():
     except ValueError as e:
         print(f"{RED}{e}{RESET}\n")
         sys.exit(1)
-    
+
     print(f"{BLUE}Connecting to Reddit...{RESET}")
 
     reddit = praw.Reddit(
@@ -37,13 +39,13 @@ def main():
         client_secret=config.reddit_secret,
         user_agent=f"script:hardwareswap-listing-scraper (by u/{config.reddit_username})"
     )
-    
+
     subreddit = reddit.subreddit("hardwareswap")
 
     print(f"{GREEN}Connected successfully.{RESET}")
 
     print_welcome_text()
-    
+
     if config.firehose:
         firehose_mode(subreddit)
     elif config.match:
@@ -73,14 +75,14 @@ def get_trades_number(flair: str) -> str:
         trades = flair.strip().lower()
     else:
         trades = "none"
-        
+
     return "0" if trades == "none" else trades
 
 def get_karma_string(author):
     j = reddit_account_age_timestamp_generator(author.created_utc)
     pk = author.link_karma
     ck = author.comment_karma
-    
+
     return j, pk, ck
 
 def send_notification(text, shorturl):
@@ -90,10 +92,10 @@ def send_notification(text, shorturl):
         "X-Priority": "3", # 1 = min, 2 = low, 3 = default, 4 = high, 5 = max
         "X-Markdown": "yes"
     }
-    
+
     data = f"{text}\n\nListing URL: [{shorturl}]({shorturl})"
     data = data.encode(encoding='utf-8')
-    
+
     try:
         requests.post(
             "https://ntfy.sh/" + config.topic_name,
@@ -111,7 +113,7 @@ def send_notification(text, shorturl):
         print(f"{RED}An unexpected error occurred while sending notification: {e}{RESET}")
     except Exception as e:
         print(f"{RED}An unexpected error occurred while sending notification: {e}{RESET}")
-        
+
 def send_sms(shorturl):
     gmail = Gmail(config.gmail_address, config.app_password)
 
@@ -124,7 +126,7 @@ def send_sms(shorturl):
 def print_new_post(subreddit, author, h, w, url, utc_date, flair, title):
     j, pk, ck = get_karma_string(author)
     trades = get_trades_number(flair)
-    
+
     if config.tinyurl:
         tinyurl = TinyURL()
         url = tinyurl.shorten(url, timeout=8)
@@ -136,17 +138,17 @@ def print_new_post(subreddit, author, h, w, url, utc_date, flair, title):
         url = ppc.shorten(url, timeout=8)
     else:
         url = url
-    
+
     print(f"New post by {BLUE}u/{author.name}{RESET} ({YELLOW}{trades}{RESET} trades | joined {CYAN}{j}{RESET} | post karma {ORANGE}{pk}{RESET} | comment karma {PURPLE}{ck}{RESET}):")
     print(f"[H]: {GREEN}{h}{RESET}\n[W]: {RED}{w}{RESET}\nURL: {SUPER_LIGHT_CYAN}{url}{RESET}")
     print(f"Posted {WHITE}{reddit_timestamp_creator(utc_date)}{RESET}\n")
-    
+
     if config.push_notifications:
         send_notification(title, url)
-        
+
     if config.sms:
         send_sms(url)
-        
+
     # Sleep for a half second to make sure the script doesn't break lol
     time.sleep(0.5)
 
@@ -174,7 +176,7 @@ def print_new_post(subreddit, author, h, w, url, utc_date, flair, title):
 def reddit_timestamp_creator(unix_epoch):
     # Convert to local datetime object
     dt = datetime.fromtimestamp(unix_epoch)
-    
+
     # Extract components
     month = dt.month
     day = dt.day
@@ -212,7 +214,7 @@ def parse_have_want(title):
     w = w_match.group(1).strip() if w_match else ""
     return h, w
 
-def firehose_mode(subreddit):    
+def firehose_mode(subreddit):
     for submission in subreddit.stream.submissions(skip_existing = not config.retrieve_older_posts):
         h, w = parse_have_want(submission.title)
         print_new_post(subreddit, submission.author, h, w, submission.url, submission.created_utc, submission.author_flair_text, submission.title)
@@ -231,13 +233,13 @@ if __name__ == "__main__":
         # check if config.py exists and if it does, convert to config.json
         conftools.convert_py_to_json()
         conftools.ensure_all_values_are_present()
-        
+
         depchecker.check_dependencies()
         import praw
         import requests
-        
+
         config = conftools.Config.load()
-        
+
         main()
     except KeyboardInterrupt:
         print(f"{YELLOW}Exiting...{RESET}")
