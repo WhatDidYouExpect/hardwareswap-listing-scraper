@@ -2,10 +2,12 @@ import re as regexp
 import time
 from datetime import datetime
 import sys
+
 import modules.updater as updater
 import modules.config_tools as conftools
 import modules.dependency_checker as depchecker
 import modules.splash as splash
+import modules.versioning_tools as versioning_tools
 from modules.url_shorteners import TinyURL, SLExpectOVH, SLPowerPCFanXYZ
 from modules.gmail import Gmail
 from modules.ansi import ansi_supported, ansi_codes
@@ -13,6 +15,9 @@ from modules.ansi import ansi_supported, ansi_codes
 
 ansi_is_supported = ansi_supported()
 RESET, RED, GREEN, BLUE, YELLOW, WHITE, PURPLE, CYAN, LIGHT_CYAN, SUPER_LIGHT_CYAN, ORANGE = ansi_codes() if ansi_is_supported else ("",) * 11
+
+remote_version = versioning_tools.get_remote_version()
+local_version = versioning_tools.get_local_version()
 
 def main():
     updater.check_for_updates()
@@ -193,7 +198,8 @@ def print_welcome_text():
     splash.print_splash_text(WHITE=WHITE, BLUE=BLUE, RESET=RESET, color=ansi_is_supported)
     print(f"\n{dashes}")
     print(f"{welcome}{BLUE}{username}{RESET}")
-    print(f"Mode: {WHITE}{'Firehose' if config.firehose else 'Match'}{RESET}")
+    print(f"Version: {ORANGE}{local_version}{RESET}")
+    print(f"Mode: {LIGHT_CYAN}{'Firehose' if config.firehose else 'Match'}{RESET}")
     print(f"Press {YELLOW}Ctrl+C{RESET} to exit.")
     print(f"{dashes}\n")
 

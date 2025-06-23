@@ -2,22 +2,12 @@ import sys
 import os
 import shutil
 import subprocess
-import requests
-from packaging.version import Version
 from modules.ansi import ansi_supported, ansi_codes
+import modules.versioning_tools as versioning_tools
 
 RESET, RED, GREEN, BLUE, YELLOW, WHITE, PURPLE, CYAN, LIGHT_CYAN, SUPER_LIGHT_CYAN, ORANGE = ansi_codes() if ansi_supported() else ("",) * 11
 
 BACKUP_FOLDER_PREFIX = "version-"
-
-def get_local_version():
-    with open("version.txt", "r") as f:
-        return Version(f.read().strip())
-    
-def get_remote_version():
-    response = requests.get("https://raw.githubusercontent.com/PowerPCFan/hardwareswap-listing-scraper/refs/heads/main/version.txt", timeout=10)
-    response.raise_for_status()
-    return Version(response.text.strip())
 
 def ensure_remote():
     remotes = subprocess.check_output(["git", "remote"]).decode().split()
@@ -54,8 +44,8 @@ def check_for_updates():
     print(f"\n{BLUE}Checking for updates...{RESET}")
     
     try:
-        remote_version = get_remote_version()
-        local_version = get_local_version()
+        remote_version = versioning_tools.get_remote_version()
+        local_version = versioning_tools.get_local_version()
         
         if remote_version > local_version:
             print(f"{YELLOW}Update available: {local_version} → {remote_version}. Updating...{RESET}")
@@ -69,6 +59,6 @@ def check_for_updates():
         elif remote_version < local_version:
             print(f"{YELLOW}WARNING: Local version {local_version} is newer than remote version {remote_version}. If this is unintentional, you may experience issues.{RESET}\n")
         else:
-            print(f"{GREEN}Script is already up to date.{RESET}\n")
+            print(f"{GREEN}Script is already up to date.{RESET}.\n")
     except Exception as e:
         print(f"{RED}Error: Update failed:{RESET} {e}")

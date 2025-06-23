@@ -1,18 +1,11 @@
-from modules.ansi import ansi_supported, ansi_codes
 import subprocess
 import sys
+from modules.systemd import Logger
 
-RESET, RED, GREEN, BLUE, YELLOW, WHITE, PURPLE, CYAN, LIGHT_CYAN, SUPER_LIGHT_CYAN, ORANGE = ansi_codes() if ansi_supported() else ("",) * 11
-
-class Logger:
-    def __init__(self):
-        pass
-
-    def ok(self, message):
-        print(f"[{GREEN} OK {RESET}] {message}")
-
-    def failed(self, message):
-        print(f"[{RED} FAILED {RESET}] {message}")
+packages = [
+    "praw",
+    "requests"
+]
         
 def check_dependencies():
     logger = Logger()
@@ -37,12 +30,13 @@ def check_dependencies():
 
     for dep, version in dependencies.items():
         try:
-            __import__(dep)
-            logger.ok(f"{dep} version {version} is installed.")
+            if dep in packages:
+                __import__(dep)
+                logger.ok(f"{dep} version {version} is installed.")
         except ImportError:
             logger.failed(f"{dep} is not installed. Installing...")
+            install_str = f"{dep}=={version}" if version else dep
             try:
-                install_str = f"{dep}=={version}" if version else dep
                 subprocess.check_call([sys.executable, "-m", "pip", "install", install_str])
             except Exception as e:
                 logger.failed(f"Failed to install {dep} version {version}. Error message: {e}\nPlease install it manually using the command: pip install {install_str}")
