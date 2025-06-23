@@ -195,7 +195,8 @@ def print_welcome_text():
     username = f"u/{config.reddit_username}!"
     dashes = "-" * (len(welcome) + len(username))
     print(f"\n{dashes}")
-    splash.print_splash_text(WHITE=WHITE, BLUE=BLUE, RESET=RESET, color=ansi_is_supported)
+    # splash.print_splash_text(WHITE=WHITE, BLUE=BLUE, RESET=RESET, color=ansi_is_supported)
+    splash.print_splash_text_background(color=ansi_is_supported) # this one uses ansi background colors so it looks better
     print(f"\n{dashes}")
     print(f"{welcome}{BLUE}{username}{RESET}")
     print(f"Version: {ORANGE}{local_version}{RESET}")
