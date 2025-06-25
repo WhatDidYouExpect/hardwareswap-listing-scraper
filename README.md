@@ -79,7 +79,7 @@ Instructions for how to install these:
         "mode": "match"
         ```
       - Important: Scroll down for important setup instructions for Match mode.
-    - Match LLM Mode (Also Recommended) (**BETA**)
+    - Match LLM Mode (**Beta**)
       - Only displays posts that meet your criteria, but it uses an LLM (Large Language Model - if you don't know what that is, it's like ChatGPT) to filter posts.
       - To use match mode, make sure the key looks like this:
         ```json
@@ -139,7 +139,7 @@ and the LLM will understand what you are looking for.
   - If set to `true`, the URLs used in notifications, SMS messages, and console output will be sl.expect.ovh links made with the [https://sl.expect.ovh](https://sl.expect.ovh) URL shortener.
   - If set to `false` (default), the script will use reddit.com URLs.
 
-- **sl_powerpcfan_xyz (BETA)**
+- **sl_powerpcfan_xyz (Beta)**
   - If set to `true`, the URLs used in notifications, SMS messages, and console output will be sl.powerpcfan.xyz links made with my URL shortener [https://sl.powerpcfan.xyz](https://sl.powerpcfan.xyz).
   - If set to `false` (default), the script will use reddit.com URLs.
 
