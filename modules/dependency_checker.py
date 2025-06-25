@@ -4,7 +4,8 @@ from modules.systemd import Logger
 
 packages = [
     "praw",
-    "requests"
+    "requests",
+    "openai"
 ]
         
 def check_dependencies():

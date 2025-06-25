@@ -10,10 +10,12 @@ import modules.config_tools as conftools
 import modules.dependency_checker as depchecker
 import modules.splash as splash
 import modules.versioning_tools as versioning_tools
+import modules.ai as ai
 from modules.url_shorteners import TinyURL, SLExpectOVH, SLPowerPCFanXYZ
 from modules.gmail import Gmail
 from modules.ansi import ansi_supported, ansi_codes
-# Other imports are at the bottom after the checks to make sure all dependencies are installed 
+# Other imports are at the bottom after the checks to make sure all dependencies are installed
+# Specifically, modules that need to be installed and don't come with Python are imported after the dependency_checker runs
 
 ansi_is_supported = ansi_supported()
 RESET, RED, GREEN, BLUE, YELLOW, WHITE, PURPLE, CYAN, LIGHT_CYAN, SUPER_LIGHT_CYAN, ORANGE = ansi_codes() if ansi_is_supported else ("",) * 11
@@ -46,20 +48,21 @@ def main():
 
     print_welcome_text()
 
-    if config.firehose:
+    if config.mode == "firehose":
         firehose_mode(subreddit)
-    elif config.match:
+    elif config.mode == "match":
         match_mode(subreddit)
+    elif config.mode == "match_llm":
+        match_llm_mode(subreddit)
     else:
-        print(f"{RED}\nError: An unknown error occurred. Please ensure that your config.json file is properly set up. {RESET}")
-        return
+        raise Exception(f"{config.mode} is not a valid mode. Please ensure that your config.json file is properly set up.")
 
 def check_variables():
+    allowed_modes = ["firehose", "match", "match_llm"]
+    
     if not config.reddit_id or not config.reddit_secret or not config.reddit_username:
         raise ValueError("There are missing variables in your config.json.\nPlease ensure all values are filled in using the instructions found in the README.")
-    if config.firehose == config.match:
-        raise ValueError("You cannot have both firehose and match mode enabled or disabled at the same time.")
-    if config.match and not (config.author_has or not config.author_wants):
+    if config.mode == "match" and not (config.author_has or not config.author_wants):
         raise ValueError("You have match mode enabled, but have not specified any values for the author_has or author_wants keys.\nPlease switch to firehose mode to view all posts, or insert values in your config.json.")
     if config.push_notifications and not config.topic_name:
         raise ValueError("You have push notifications enabled, but have not specified a topic name.\nPlease set a topic name in your config.json file - see the README for instructions.")
@@ -67,6 +70,8 @@ def check_variables():
         raise ValueError("You have SMS notifications enabled but have not specified all of the required values.\nPlease ensure your config.json has all the proper values filled in.")
     if sum(bool(x) for x in [config.tinyurl, config.sl_expect_ovh, config.sl_powerpcfan_xyz]) > 1:
         raise ValueError("You cannot have more than one URL shortener enabled at once.\nPlease choose one and disable the others in your config.json file.")
+    if config.mode not in allowed_modes:
+        raise ValueError(f"Invalid mode specified in config.json. Allowed values are: 'firehose', 'match', 'match_llm'.")
 
 def get_trades_number(flair: str) -> str:
     if isinstance(flair, str) and flair and flair.startswith("Trades: "):
@@ -202,7 +207,7 @@ def print_welcome_text():
     print(f"\n{dashes}")
     print(f"{welcome}{BLUE}{username}{RESET}")
     print(f"Version: {ORANGE}{local_version}{RESET}")
-    print(f"Mode: {LIGHT_CYAN}{'Firehose' if config.firehose else 'Match'}{RESET}")
+    print(f"Mode: {LIGHT_CYAN}{'Firehose' if config.mode == 'firehose' else 'Match' if config.mode == 'match' else 'Match LLM'}{RESET}")
     print(f"Press {YELLOW}Ctrl+C{RESET} to exit.")
     print(f"{dashes}\n")
 
@@ -227,7 +232,22 @@ def match_mode(subreddit):
 
         if any(s in h.lower() for s in author_has_lower) and any(s in w.lower() for s in author_wants_lower):
             print_new_post(subreddit, submission.author, h, w, submission.url, submission.created_utc, submission.author_flair_text, submission.title)
+    
+def match_llm_mode(subreddit):
+    try:
+        openrouter = ai.OpenRouter(api_key=config.openrouter_api_key)
+        
+        for submission in subreddit.stream.submissions(skip_existing = not config.retrieve_older_posts):
+            h, w = parse_have_want(submission.title)
+            title_replaced: str = str(submission.title).replace("[H]", "[Have]").replace("[W]", "[Want]").strip()
+            
+            response = openrouter.llm(author_has_llm_query=config.author_has_llm_query, author_wants_llm_query=config.author_wants_llm_query, title=title_replaced)
 
+            if openrouter.is_match(response):
+                print_new_post(subreddit, submission.author, h, w, submission.url, submission.created_utc, submission.author_flair_text, submission.title)
+    except Exception as e:
+        raise Exception(f"{e.__dict__['body']['message']}")
+        
 if __name__ == "__main__":
     try:
         # check if config.py exists and if it does, convert to config.json

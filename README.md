@@ -4,16 +4,25 @@ This README isn't anything amazing but everything you need should be here.
 
 # Getting up and running with the script
 ## Prerequisites
-
 Make sure you have the following installed before proceeding:
+### Windows
 - A recent release of [Python](https://python.org)
 - A recent release of [Git](https://git-scm.com/downloads)
 - `pip` (comes with Python)
-(if you are on Linux or macOS, installation of these are covered in the intructions)
+### Linux, macOS
+- A recent release of Python, Git, and pip
+Instructions for how to install these:
+1. Open up a terminal.
+2. If you don't have Git installed, install it.  
+   on **macOS** you can do this by installing the XCode Developer tools, which includes Git and Python. They can be installed using the command `xcode-select --install`.  
+   on **Linux**, you likely already have Git, but if not, install it using your package manager.  
+   For example, on Debian based distros (e.g Ubuntu, PopOS, Linux Mint) you can use `sudo apt install git`  
+   On Fedora, you can use `sudo dnf install git`  
+   On Arch Linux, you can use `sudo pacman -S git`
+3. (Skip if on MacOS and you installed the XCode Developer Tools) If you are on Linux, There's a 99% that you already have Python installed. If not, use the previous commands but instead of Git, you should install python3.
 
-Optional but recommended:
-- An editor with syntax highlighting such as Notepad++
-- An IDE like Visual Studio Code (if you know what you're doing)
+### Optional but recommended for all platforms (Windows, macOS, Linux):
+- An editor with syntax highlighting such as Notepad++ (Windows), Visual Studio Code (Windows, macOS, Linux), or even a text-based editor like `nano` (Windows, macOS, Linux) if you're more of a "power user" who likes using CLI tools
 
 ## Script Download Instructions
 ### Windows
@@ -25,23 +34,16 @@ Optional but recommended:
 
 ### Linux & macOS
 1. Open up a terminal.
-2. Change the directory to the one where you want the script to be, for example, for your home directory, execute "cd ~"
-3. If you don't have Git installed, install it.  
-   on MacOS you can do this by installing the XCode Developer tools, which includes Git and Python. They can be installed using the command `xcode-select --install`.  
-   on Linux, you likely already have Git, but if not, install it using your package manager.  
-   For example, on Debian based distros (e.g Ubuntu, PopOS, Linux Mint) you can use `sudo apt install git`  
-   On Fedora, you can use `sudo dnf install git`  
-   On Arch Linux, you can use `sudo pacman -S git`
-4. (Skip if on MacOS and you installed the XCode Developer Tools) If you are on Linux, There's a 99% that you already have Python installed. If not, use the previous commands but instead of Git, you should install python3.
-5. Now, clone this repository by running `git clone https://github.com/PowerPCFan/hardwareswap-listing-scraper.git`.
-6. Finally, enter the directory by using `cd hardwareswap-listing-scraper`.  
+2. Change the directory to the one where you want the script to be, for example, for your home directory, execute `cd ~`.
+3. Now, clone this repository by running `git clone https://github.com/PowerPCFan/hardwareswap-listing-scraper.git`.
+4. Finally, enter the directory by using `cd hardwareswap-listing-scraper`.  
 **IMPORTANT: DO NOT CLOSE THIS TERMINAL! You will need it later.**
 
 ## Preparing the script
 1. Go to [https://www.reddit.com/prefs/apps](https://www.reddit.com/prefs/apps). Press **"are you a developer? create an app..."**
 2. Name it **"HardwareSwap Listing Scraper"** and set the app type to **Script**. 
 3. Leave the description blank.
-4. Set the redirect URI to **http://localhost:8080** (this is just a placeholder URL - you could probably use google.com as well and it should still work!). 
+4. Set the redirect URI to **http://localhost:8080** (this is just a placeholder URL - you can really use anything here). 
 5. Complete the reCaptcha and press **create app**.
 6. Rename the file `example_config.json` to `config.json`.
 7. Fill in your config.json using the "Configuring the script" instructions below. **Make sure that you fill in every value properly.**
@@ -62,22 +64,28 @@ Optional but recommended:
 3. DO NOT INCLUDE THE `u/` - if your username is `u/SuperCoolRedditUsername` just put in `SuperCoolRedditUsername`.
 
 ### Mode Setup (REQUIRED)
-1. Open your config.json file and find the keys `"firehose"` and `"match"`.
-2. There are two modes: 
+1. Open your config.json file and find the key `"mode"`.
+2. There are three modes: 
     - Firehose Mode
       - Gives you a stream of every new post that comes in.
-      - To use firehose mode (default), make sure the keys look like this:
+      - To use firehose mode (default), make sure the key looks like this:
         ```json
-        "firehose": true,
-        "match": false,
+        "mode": "firehose"
         ```
-    - Match Mode
+    - Match Mode (Recommended)
       - Only displays posts that meet your criteria.
-      - To use match mode, make sure the keys look like this:
+      - To use match mode, make sure the key looks like this:
         ```json
-        "firehose": false,
-        "match": true,
+        "mode": "match"
         ```
+      - Important: Scroll down for important setup instructions for Match mode.
+    - Match LLM Mode (Also Recommended) (**BETA**)
+      - Only displays posts that meet your criteria, but it uses an LLM (Large Language Model - if you don't know what that is, it's like ChatGPT) to filter posts.
+      - To use match mode, make sure the key looks like this:
+        ```json
+        "mode": "match_llm"
+        ```
+      - Important: Scroll down for important setup instructions for Match LLM mode.
 ### Author Has and Author Wants Setup (ONLY IF USING MATCH MODE)
 - Since you're using Match Mode, you need to define what you're looking for. 
 - In the config.json file, I provided examples on how to properly define the `"author_has"` and `"author_wants"` keys - just change my examples to whatever you want.
@@ -93,12 +101,28 @@ Optional but recommended:
       "Intel i5-12600K"
     ],
   ```
-  - 
+
   ```json
     "author_has": [
       "4090"
     ],
   ```
+
+### Author Has and Author Wants LLM Queries (ONLY IF USING LLM MATCH MODE)
+- Since you're using LLM Match Mode, you need to tell the LLM what you are looking for. Your query can be as simple or as detailed as you want, but note that you will use more tokens if you use a longer query.
+- For example, you could do this:
+```json
+"author_has_llm_query": "Fast graphics card",
+"author_wants_llm_query": "PayPal",
+```
+and the LLM will understand what you are looking for.
+- You also need to set up an OpenRouter API key in order for LLM mode to work.
+- To do this, go to [https://openrouter.ai/](https://openrouter.ai/) and make an account.
+- Then go to [https://openrouter.ai/settings/keys](https://openrouter.ai/settings/keys) and create a new API key called "HardwareSwap Listing Scraper". Your limit will be 10,000 tokens/day unless you pay.
+- Now, all you need to do is paste it in your JSON file, for example (I didn't put my real API key for obvious reasons):
+```json
+"openrouter_api_key": "abcdefghijklmnopqrstuvwxyz"
+```
 
 ### retrieve_older_posts (Optional)
 - If set to `true`, the script will retrieve the last 100 posts (firehose mode) or the posts that meet your criteria within the last 100 posts (match mode). 
@@ -147,19 +171,18 @@ To set up the script so you get SMS texts for every new HWS post (firehose mode)
 
 ## Script Run Instructions
 ### Windows
-***Note: For the following commands, if `py` doesn't work, try `python` or `python3`.***
-1. In the PowerShell terminal you left open from earlier, run these commands:
-   1. `py -m venv venv`
-   2. `venv\Scripts\Activate.ps1`
-   3. `pip install -r requirements.txt`
-2. And finally to start the script, run `py scraper.py`.
-Pro Tip: If you're looking for a specific item, enable Push Notifications and Match Mode (Follow the instructions in section "Configuring the script"), and leave the script running in the background, so you get notified when a listing gets posted that meets your criteria!
+***Note: For the following commands, if `py` doesn't work, try `python` or `python3`.***  
+In the PowerShell terminal you left open from earlier, run these commands:
+   1. Create a virtual environment for packages: `py -m venv venv` ***(You only need to do this once!)***
+   2. Activate the venv (virtual environment): `venv\Scripts\Activate.ps1`
+   3. Install required packages: `pip install -r requirements.txt`
+   4. And finally to start the actual script: `py scraper.py`.
 
 ### Linux and Mac
-In the same terminal you opened, run these commands:  
-   1. Create a virtual enviroment for the packages: `python3 -m venv venv`. (You only need to do this once)
+In the same terminal you left open from earlier, run these commands:  
+   1. Create a virtual enviroment for the packages: `python3 -m venv venv`. ***(You only need to do this once!)***
    2. Activate the virtual enviroment: `source venv/bin/activate`.
-   3. Install the required packages: `pip install -r requirements.txt`. (You only need to do this once)
+   3. Install the required packages: `pip install -r requirements.txt`. ***(You only need to do this once!)***
    4. Run the script: `python3 scraper.py`.
 
 

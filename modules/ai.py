@@ -1,0 +1,49 @@
+from openai import OpenAI
+from typing import Optional
+
+
+class OpenRouter:
+    def __init__(self, api_key=None):
+        self.model = "mistralai/mistral-small-3.2-24b-instruct:free"
+        self.auth: Optional[str] = api_key
+
+    def llm(self, author_has_llm_query, author_wants_llm_query, title):
+        prompt = (
+            f"Does this search query \"Seller has {author_has_llm_query}, seller wants {author_wants_llm_query}\" match this listing title \"{title}\"? "
+            f"Carefully analyze the listing title and the search query. Use semantic and not literal reasoning. "
+            f"For example, \"fast CPU\" is likely looking for listings that have a fast CPU for sale, not listings with the exact words \"fast CPU\" in the title. "
+            f"Reply ONLY with \"TRUE\" if it matches or \"FALSE\" if not. No explanations or reasoning."
+        )
+        
+        client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=self.auth,
+        )
+
+        completion = client.chat.completions.create(
+            extra_headers={},
+            extra_body={},
+            model=self.model,
+            messages=[
+                {
+                    "role": "user", 
+                    "content": [
+                        {
+                            "type": "text", 
+                            "text": prompt
+                        }
+                    ]
+                }
+            ],
+        )
+        
+        return completion.choices[0].message.content
+        
+    def is_match(self, llm_response: Optional[str]) -> bool:
+        if llm_response is None:
+            return False
+        else:
+            if "true" in llm_response.strip().lower():
+                return True
+            else:
+                return False

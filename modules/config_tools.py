@@ -51,8 +51,7 @@ def ensure_all_values_are_present():
         "reddit_id": "",
         "reddit_secret": "",
         "reddit_username": "",
-        "firehose": True,
-        "match": False,
+        "mode": "firehose",
         "author_has": [
             "3060",
             "3060 Ti"
@@ -60,6 +59,9 @@ def ensure_all_values_are_present():
         "author_wants": [
             "PayPal"
         ],
+        "openrouter_api_key": "",
+        "author_has_llm_query": "",
+        "author_wants_llm_query": "",
         "retrieve_older_posts": False,
         "tinyurl": False,
         "sl_expect_ovh": False,
@@ -73,16 +75,30 @@ def ensure_all_values_are_present():
         "phone_number": ""
     }
     
+    deprecated_keys = [
+        "firehose",
+        "match",
+        "match_llm"
+    ]
+        
     # load config.json
     with open(CONFIG_JSON, 'r') as f:
-        config = json.load(f)
+        config: dict = json.load(f)
+
+    updated = False
 
     # add missing keys to config.json and set them to the default values
-    updated = False
     for key, default_value in default_config.items():
         if key not in config:
-            print(f"{RED}Key {key} was not found in your config.json file. Adding...{RESET}")
+            print(f"{RED}Key '{key}' was not found in your config.json file. Adding...{RESET}")
             config[key] = default_value
+            updated = True
+    
+    # remove keys that were once used but are no longer needed
+    for key in deprecated_keys:
+        if key in config:
+            print(f"{YELLOW}Deprecated key '{key}' was found in your config.json file. Removing...{RESET}")
+            config.pop(key, None)
             updated = True
 
     if updated:
@@ -96,11 +112,14 @@ class Config:
     reddit_secret: str
     reddit_username: str
 
-    firehose: bool
-    match: bool
+    mode: str
 
     author_has: List[str]
     author_wants: List[str]
+    
+    openrouter_api_key: str
+    author_has_llm_query: str
+    author_wants_llm_query: str
 
     retrieve_older_posts: bool
     
