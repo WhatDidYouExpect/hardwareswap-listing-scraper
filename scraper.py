@@ -1,21 +1,11 @@
 #!/usr/bin/env python3
 
-import re as regexp
-import time
-from datetime import datetime
-import sys
-
-import modules.updater as updater
 import modules.config_tools as conftools
-import modules.dependency_checker as depchecker
-import modules.splash as splash
 import modules.versioning_tools as versioning_tools
-import modules.ai as ai
-from modules.url_shorteners import TinyURL, SLExpectOVH, SLPowerPCFanXYZ
-from modules.gmail import Gmail
+import modules.dependency_checker as depchecker
 from modules.ansi import ansi_supported, ansi_codes
-# Other imports are at the bottom after the checks to make sure all dependencies are installed
-# Specifically, modules that need to be installed and don't come with Python are imported after the dependency_checker runs
+
+# The rest of the imports are after depchecker.check_dependencies() runs to make sure all dependencies are installed
 
 ansi_is_supported = ansi_supported()
 RESET, RED, GREEN, BLUE, YELLOW, WHITE, PURPLE, CYAN, LIGHT_CYAN, SUPER_LIGHT_CYAN, ORANGE = ansi_codes() if ansi_is_supported else ("",) * 11
@@ -255,8 +245,22 @@ if __name__ == "__main__":
         conftools.ensure_all_values_are_present()
 
         depchecker.check_dependencies()
+
+        
+        import re as regexp
+        import time
+        from datetime import datetime
+        import sys
+
+        import modules.updater as updater
+        import modules.splash as splash
+        import modules.ai as ai
+        from modules.url_shorteners import TinyURL, SLExpectOVH, SLPowerPCFanXYZ
+        from modules.gmail import Gmail
+        
         import praw
         import requests
+        
 
         config = conftools.Config.load()
 
