@@ -9,6 +9,7 @@ Make sure you have the following installed before proceeding:
 - A recent release of [Python](https://python.org)
 - A recent release of [Git](https://git-scm.com/downloads)
 - `pip` (comes with Python)
+(if you are on Linux or macOS, installation of these are covered in the intructions)
 
 Optional but recommended:
 - An editor with syntax highlighting such as Notepad++
@@ -22,11 +23,19 @@ Optional but recommended:
 4. Once that's done, type `cd hardwareswap-listing-scraper` to enter the folder for HardwareSwap Listing Scraper.  
 **IMPORTANT: DO NOT CLOSE THIS POWERSHELL WINDOW! You will need it later.**
 
-### Linux
-Haven't written Linux instructions yet, sorry!
-
-### macOS
-Haven't written macOS instructions yet, sorry!
+### Linux & macOS
+1. Open up a terminal.
+2. Change the directory to the one where you want the script to be, for example, for your home directory, execute "cd ~"
+3. If you don't have Git installed, install it.  
+   on MacOS you can do this by installing the XCode Developer tools, which includes Git and Python. They can be installed using the command `xcode-select --install`.  
+   on Linux, you likely already have Git, but if not, install it using your package manager.  
+   For example, on Debian based distros (e.g Ubuntu, PopOS, Linux Mint) you can use `sudo apt install git`  
+   On Fedora, you can use `sudo dnf install git`  
+   On Arch Linux, you can use `sudo pacman -S git`
+4. (Skip if on MacOS and you installed the XCode Developer Tools) If you are on Linux, There's a 99% that you already have Python installed. If not, use the previous commands but instead of Git, you should install python3.
+5. Now, clone this repository by running `git clone https://github.com/PowerPCFan/hardwareswap-listing-scraper.git`.
+6. Finally, enter the directory by using `cd hardwareswap-listing-scraper`.  
+**IMPORTANT: DO NOT CLOSE THIS TERMINAL! You will need it later.**
 
 ## Preparing the script
 1. Go to [https://www.reddit.com/prefs/apps](https://www.reddit.com/prefs/apps). Press **"are you a developer? create an app..."**
@@ -146,8 +155,13 @@ To set up the script so you get SMS texts for every new HWS post (firehose mode)
 2. And finally to start the script, run `py scraper.py`.
 Pro Tip: If you're looking for a specific item, enable Push Notifications and Match Mode (Follow the instructions in section "Configuring the script"), and leave the script running in the background, so you get notified when a listing gets posted that meets your criteria!
 
-### Linux
-Haven't written Linux instructions yet but if you're running linux you probably know what to do based on the Windows instructions. 
+### Linux and Mac
+In the same terminal you opened, run these commands:  
+   1. Create a virtual enviroment for the packages: `python3 -m venv venv`. (You only need to do this once)
+   2. Activate the virtual enviroment: `source venv/bin/activate`.
+   3. Install the required packages: `pip install -r requirements.txt`. (You only need to do this once)
+   4. Run the script: `python3 scraper.py`.
+
 
 # Issues
 If something's broken, confusing, or just not working right, [open an issue!](https://github.com/PowerPCFan/hardwareswap-listing-scraper/issues).
