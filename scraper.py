@@ -3,7 +3,7 @@
 import modules.config_tools as conftools
 import modules.versioning_tools as versioning_tools
 import modules.dependency_checker as depchecker
-from modules.ansi import ansi_supported, ansi_codes
+from modules.colors.ansi import ansi_supported, ansi_codes
 
 # The rest of the imports are after depchecker.check_dependencies() runs to make sure all dependencies are installed
 
@@ -121,6 +121,8 @@ def send_sms(shorturl):
 def print_new_post(subreddit, author, h, w, url, utc_date, flair, title):
     j, pk, ck = get_karma_string(author)
     trades = get_trades_number(flair)
+    
+    date_posted = reddit_timestamp_creator(utc_date)
 
     if config.tinyurl:
         tinyurl = TinyURL()
@@ -136,37 +138,35 @@ def print_new_post(subreddit, author, h, w, url, utc_date, flair, title):
 
     print(f"New post by {BLUE}u/{author.name}{RESET} ({YELLOW}{trades}{RESET} trades | joined {CYAN}{j}{RESET} | post karma {ORANGE}{pk}{RESET} | comment karma {PURPLE}{ck}{RESET}):")
     print(f"[H]: {GREEN}{h}{RESET}\n[W]: {RED}{w}{RESET}\nURL: {SUPER_LIGHT_CYAN}{url}{RESET}")
-    print(f"Posted {WHITE}{reddit_timestamp_creator(utc_date)}{RESET}\n")
+    print(f"Posted {WHITE}{date_posted}{RESET}\n")
 
     if config.push_notifications:
         send_notification(title, url)
 
     if config.sms:
         send_sms(url)
+        
+    if config.webhook:
+        webhook.send_webhook(
+            webhook_url = config.webhook_url,
+            content = config.webhook_ping,
+            username = "HardwareSwap Listing Scraper Alerts",
+            embed = webhook.create_embed(
+                color = "Dodger Blue",
+                url = url,
+                author = author,
+                trades = trades,
+                have = str(h).replace("[H]", "").strip(),
+                want = str(w).replace("[W]", "").strip(),
+                joined = j,
+                post_karma = pk,
+                comment_karma = ck,
+                date_posted = date_posted
+            )
+        )
 
     # Sleep for a half second to make sure the script doesn't break lol
     time.sleep(0.5)
-
-# def reddit_timestamp_creator(unix_epoch):
-#     now = int(time.time())
-#     diff = now - int(unix_epoch)
-#     if diff < 60:
-#         return "just now"
-#     elif diff < 3600:
-#         minutes = diff // 60
-#         return f"{minutes} minute{'s' if minutes != 1 else ''} ago"
-#     elif diff < 86400:
-#         hours = diff // 3600
-#         return f"{hours} hour{'s' if hours != 1 else ''} ago"
-#     elif diff < 2592000:
-#         days = diff // 86400
-#         return f"{days} day{'s' if days != 1 else ''} ago"
-#     elif diff < 31536000:
-#         months = diff // 2592000
-#         return f"{months} month{'s' if months != 1 else ''} ago"
-#     else:
-#         years = diff // 31536000
-#         return f"{years} year{'s' if years != 1 else ''} ago"
 
 def reddit_timestamp_creator(unix_epoch):
     # Convert to local datetime object
@@ -240,27 +240,28 @@ def match_llm_mode(subreddit):
         
 if __name__ == "__main__":
     try:
-        # check if config.py exists and if it does, convert to config.json
-        conftools.convert_py_to_json()
-        conftools.ensure_all_values_are_present()
-
         depchecker.check_dependencies()
-
         
+        # stdlib imports
         import re as regexp
         import time
         from datetime import datetime
         import sys
-
+        
+        # Local imports
         import modules.updater as updater
         import modules.splash as splash
         import modules.ai as ai
+        import modules.discord.webhook as webhook
         from modules.url_shorteners import TinyURL, SLExpectOVH, SLPowerPCFanXYZ
         from modules.gmail import Gmail
-        
+
+        # Third-party imports
         import praw
         import requests
-        
+
+        conftools.convert_py_to_json()
+        conftools.ensure_all_values_are_present()
 
         config = conftools.Config.load()
 

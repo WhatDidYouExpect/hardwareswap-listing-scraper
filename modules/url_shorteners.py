@@ -1,5 +1,5 @@
 import requests
-from modules.ansi import ansi_supported, ansi_codes
+from modules.colors.ansi import ansi_supported, ansi_codes
 
 RESET, RED, GREEN, BLUE, YELLOW, WHITE, PURPLE, CYAN, LIGHT_CYAN, SUPER_LIGHT_CYAN, ORANGE = ansi_codes() if ansi_supported() else ("",) * 11    
 

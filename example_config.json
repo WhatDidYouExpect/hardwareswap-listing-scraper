@@ -23,5 +23,8 @@
     "gmail_address": "",
     "app_password": "",
     "sms_gateway": "",
-    "phone_number": ""
+    "phone_number": "",
+    "webhook": false,
+    "webhook_url": "",
+    "webhook_ping": ""
 }

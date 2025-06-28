@@ -2,7 +2,7 @@ import importlib.util
 import json
 import os
 from typing import List
-from modules.ansi import ansi_supported, ansi_codes
+from modules.colors.ansi import ansi_supported, ansi_codes
 from dataclasses import dataclass
 
 RESET, RED, GREEN, BLUE, YELLOW, WHITE, PURPLE, CYAN, LIGHT_CYAN, SUPER_LIGHT_CYAN, ORANGE = ansi_codes() if ansi_supported() else ("",) * 11
@@ -72,7 +72,10 @@ def ensure_all_values_are_present():
         "gmail_address": "",
         "app_password": "",
         "sms_gateway": "",
-        "phone_number": ""
+        "phone_number": "",
+        "webhook": False,
+        "webhook_url": "",
+        "webhook_ping": ""
     }
     
     deprecated_keys = [
@@ -135,6 +138,10 @@ class Config:
     app_password: str
     sms_gateway: str
     phone_number: str
+    
+    webhook: bool
+    webhook_url: str
+    webhook_ping: str
 
     # function to load the vars from config.json
     @staticmethod

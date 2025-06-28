@@ -143,7 +143,22 @@ and the LLM will understand what you are looking for.
   - If set to `true`, the URLs used in notifications, SMS messages, and console output will be sl.powerpcfan.xyz links made with my URL shortener [https://sl.powerpcfan.xyz](https://sl.powerpcfan.xyz).
   - If set to `false` (default), the script will use reddit.com URLs.
 
-### Receive Push Notifications for posts (Optional, but recommended!)
+### Receive Discord Pings for Posts with a Webhook (Optional) (Recommended!)
+To set up the script so a user or role gets pinged on Discord for every new HWS post (firehose mode) or every new HWS post that matches your criteria (match mode), follow these steps:
+1. In your config.json, change the `webhook` key from `false` to `true`, so `"webhook": false` becomes `"webhook": true`.
+2. Enable Developer Mode: [https://beebom.com/how-enable-disable-developer-mode-discord/](https://beebom.com/how-enable-disable-developer-mode-discord/)
+3. Create a webhook for a channel in a server of your choice (that you have Manage Server permissions in): [https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks)
+4. Paste the webhook URL in your config.json between the quotes after `"webhook_url"`.
+5. Configure what user or role you'd like to ping by right-clicking the user or role and selecting "Copy Role ID" / "Copy User ID". 
+6. Then follow these steps:
+   - If you copied the ID of a role, insert `<@&roleid>` between the quotes after `"webhook_ping"`, with `roleid` being the Role ID that you copied in step #5.
+     - For example it might look like this: `"webhook_ping": "<@&123456789>"`
+   - If you copied the ID of a user, insert `<@userid>` between the quotes after `"webhook_ping"`, with `userid` being the User ID that you copied in step #5.
+     - For example it might look like this: `"webhook_ping": "<@123456789>"`
+
+That's all! Whenever a new post is printed to your terminal, it'll send a message to the webhook and ping the desired user/role as well! This has only been tested on Discord but you might be able to get it to work with other platforms like Slack since it's just a webhook.
+
+### Receive Push Notifications for posts (Optional) (Recommended!)
 To set up the script so you get push notifications for every new HWS post (firehose mode) or every new HWS post that matches your criteria (match mode), follow these steps:
 1. In your config.json, change the `push_notifications` key from `false` to `true`, so `"push_notifications": false` becomes `"push_notifications": true`.
 2. Download the ntfy app on your phone. Links: 
@@ -153,8 +168,9 @@ To set up the script so you get push notifications for every new HWS post (fireh
       - Note: If you would like Markdown support on mobile (clickable links, formatted text, etc), use the ntfy Web App, and add it to your Home Screen to receive notifications. 
 3. Open the app, and allow notifications.
 4. Press the plus button to create a topic. Name it something randomized and secure. 
-5. In your config.json, insert your topic name between the quotes after `"topic_name"`. 
-6. That's all! Whenever a new post is printed to your terminal, it'll send you a notification as well! Here's what a notification looks like (screenshot taken on iOS, but it probably looks similar on Android or other platforms):
+5. In your config.json, insert your topic name between the quotes after `"topic_name"`.  
+
+That's all! Whenever a new post is printed to your terminal, it'll send you a notification as well! Here's what a notification looks like (screenshot taken on iOS, but it probably looks similar on Android or other platforms):
 ![Listing notification on iOS](https://raw.githubusercontent.com/PowerPCFan/hardwareswap-listing-scraper/refs/heads/main/assets/2.jpg)
 
 ### Receive SMS message for posts (Optional)
@@ -166,8 +182,9 @@ To set up the script so you get SMS texts for every new HWS post (firehose mode)
 5. Visit [https://myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords).
 6. Create a new App Password with the name "HardwareSwap Listing Scraper", copy the App Password, and paste it in your config.json under the `"app_password"` key. Make sure that the formatting is correct, sometimes when you copy your app password it might mess up the formatting of config.json. 
 7. Fill in your phone number in your config.json. Make sure the formatting is correct - for example, if your phone number was `+1 (123) 456-7890` you would do `"phone_number": "1234567890"` - note that I removed the country code and the parentheses and dashes. 
-8. Insert your phone carrier's SMS gateway in your config.json. Do not include your phone number or the "at" (`@`) symbol. For example, I use Verizon, so I'm going to put `"sms_gateway": "vzwpix.com"`. If you don't know what yours is, try googling "carrier-name SMS gateway" or "carrier-name MMS gateway". 
-9.  That's all! Whenever a new post is printed to your terminal, it'll send you an SMS text.
+8. Insert your phone carrier's SMS gateway in your config.json. Do not include your phone number or the "at" (`@`) symbol. For example, I use Verizon, so I'm going to put `"sms_gateway": "vzwpix.com"`. If you don't know what yours is, try googling "carrier-name SMS gateway" or "carrier-name MMS gateway".  
+
+That's all! Whenever a new post is printed to your terminal, it'll send you an SMS text.
 
 ## Script Run Instructions
 ### Windows

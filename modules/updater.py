@@ -2,7 +2,7 @@ import sys
 import os
 import shutil
 import subprocess
-from modules.ansi import ansi_supported, ansi_codes
+from modules.colors.ansi import ansi_supported, ansi_codes
 import modules.versioning_tools as versioning_tools
 
 RESET, RED, GREEN, BLUE, YELLOW, WHITE, PURPLE, CYAN, LIGHT_CYAN, SUPER_LIGHT_CYAN, ORANGE = ansi_codes() if ansi_supported() else ("",) * 11

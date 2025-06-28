@@ -1,6 +1,7 @@
 import os
 import sys
 import ctypes
+import functools
 
 def ansi_codes():
     ANSI = "\033["
@@ -18,7 +19,7 @@ def ansi_codes():
     
     return RESET, RED, GREEN, BLUE, YELLOW, WHITE, PURPLE, CYAN, LIGHT_CYAN, SUPER_LIGHT_CYAN, ORANGE
 
-# Thanks to ChatGPT for this lmao
+# Thanks to ChatGPT for this, I modified it but the core logic is from chatgpt
 
 def enable_ansi_windows():
     try:
@@ -48,14 +49,13 @@ def supports_ansi(vt_enabled):
         )
     )
 
+@functools.lru_cache(maxsize=None)
 def ansi_supported():
     vt_enabled = False
     if os.name == 'nt':
         vt_enabled = enable_ansi_windows()
     
-    ansi_ok = supports_ansi(vt_enabled)
-
-    if ansi_ok:
+    if supports_ansi(vt_enabled):
         return True
     else:
         return False
