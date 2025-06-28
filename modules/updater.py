@@ -50,7 +50,7 @@ def check_for_updates():
         if remote_version > local_version:
             print(f"{YELLOW}Update available: {local_version} → {remote_version}. Updating...{RESET}")
             
-            if shutil.which("git") is None:
+            if shutil.which(cmd="git") is None:
                 print(f"{RED}Error: Git is not installed or is not in PATH. Update could not be downloaded.{RESET}")
                 sys.exit(1)
             

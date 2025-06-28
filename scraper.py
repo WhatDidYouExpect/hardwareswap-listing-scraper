@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 
-import modules.config_tools as conftools
-import modules.versioning_tools as versioning_tools
-import modules.dependency_checker as depchecker
-from modules.colors.ansi import ansi_supported, ansi_codes
+# stdlib imports
+import re as regexp
+import time
+from datetime import datetime
+import sys
 
-# The rest of the imports are after depchecker.check_dependencies() runs to make sure all dependencies are installed
-
-ansi_is_supported = ansi_supported()
-RESET, RED, GREEN, BLUE, YELLOW, WHITE, PURPLE, CYAN, LIGHT_CYAN, SUPER_LIGHT_CYAN, ORANGE = ansi_codes() if ansi_is_supported else ("",) * 11
-
-remote_version = versioning_tools.get_remote_version()
-local_version = versioning_tools.get_local_version()
+# The rest of the imports are at the bottom 
+# after depchecker.check_dependencies() runs 
+# to make sure all dependencies are installed
 
 def main():
     updater.check_for_updates()
@@ -239,19 +236,26 @@ def match_llm_mode(subreddit):
         raise Exception(f"{e.__dict__['body']['message']}")
         
 if __name__ == "__main__":
+    RESET, RED, GREEN, BLUE, YELLOW, WHITE, PURPLE, CYAN, LIGHT_CYAN, SUPER_LIGHT_CYAN, ORANGE = ("",) * 11
     try:
+        import modules.dependency_checker as depchecker
         depchecker.check_dependencies()
         
-        # stdlib imports
-        import re as regexp
-        import time
-        from datetime import datetime
-        import sys
+        import modules.versioning_tools as versioning_tools
+        from modules.colors.ansi import ansi_supported, ansi_codes
+
+        ansi_is_supported = ansi_supported()
+        if ansi_is_supported:
+            RESET, RED, GREEN, BLUE, YELLOW, WHITE, PURPLE, CYAN, LIGHT_CYAN, SUPER_LIGHT_CYAN, ORANGE = ansi_codes()
+
+        remote_version = versioning_tools.get_remote_version()
+        local_version = versioning_tools.get_local_version()
         
         # Local imports
         import modules.updater as updater
         import modules.splash as splash
         import modules.ai as ai
+        import modules.config_tools as conftools
         import modules.discord.webhook as webhook
         from modules.url_shorteners import TinyURL, SLExpectOVH, SLPowerPCFanXYZ
         from modules.gmail import Gmail
