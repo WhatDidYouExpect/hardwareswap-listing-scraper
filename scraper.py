@@ -136,9 +136,9 @@ def print_new_post(subreddit, author, h, w, url, utc_date, flair, title):
     else:
         url = url
 
-    print(f"New post by {BLUE}u/{author.name}{RESET} ({YELLOW}{trades}{RESET} trades | joined {CYAN}{j}{RESET} | post karma {ORANGE}{pk}{RESET} | comment karma {PURPLE}{ck}{RESET}):")
+    print(f"\nNew post by {BLUE}u/{author.name}{RESET} ({YELLOW}{trades}{RESET} trades | joined {CYAN}{j}{RESET} | post karma {ORANGE}{pk}{RESET} | comment karma {PURPLE}{ck}{RESET}):")
     print(f"[H]: {GREEN}{h}{RESET}\n[W]: {RED}{w}{RESET}\nURL: {SUPER_LIGHT_CYAN}{url}{RESET}")
-    print(f"Posted {WHITE}{date_posted}{RESET}\n")
+    print(f"Posted {WHITE}{date_posted}{RESET}")
 
     if config.push_notifications:
         send_notification(title, url)
@@ -199,7 +199,7 @@ def print_welcome_text():
     print(f"Version: {ORANGE}{local_version}{RESET}")
     print(f"Mode: {LIGHT_CYAN}{'Firehose' if config.mode == 'firehose' else 'Match' if config.mode == 'match' else 'Match LLM'}{RESET}")
     print(f"Press {YELLOW}Ctrl+C{RESET} to exit.")
-    print(f"{dashes}\n")
+    print(f"{dashes}")
 
 def parse_have_want(title):
     h_match = regexp.search(r'\[H\](.*?)\[W\]', title, regexp.IGNORECASE)
@@ -267,7 +267,7 @@ if __name__ == "__main__":
 
         main()
     except KeyboardInterrupt:
-        print(f"{YELLOW}Exiting...{RESET}")
+        print(f"{YELLOW}\nExiting...{RESET}")
         sys.exit(0)
     except Exception as e:
         print(f"{'-' * 36}\n{RED}ERROR: An unexpected error occurred:{RESET}\n{'-' * 36}\n{e}")
