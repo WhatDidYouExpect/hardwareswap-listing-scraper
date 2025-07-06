@@ -1,5 +1,5 @@
 import re as regexp
-import modules.discord.webhook as webhook
+import modules.notifications.discord as discord
 from modules.config.configuration import config
 
 from modules.notifications import ntfy, sms
@@ -64,11 +64,11 @@ def print_new_post(subreddit, author, h, w, url, utc_date, flair, title):
         sms.send_sms(url)
         
     if config.webhook:
-        webhook.send_webhook(
+        discord.send_webhook(
             webhook_url = config.webhook_url,
             content = config.webhook_ping,
             username = "HardwareSwap Listing Scraper Alerts",
-            embed = webhook.create_embed(
+            embed = discord.create_embed(
                 color = "Dodger Blue",
                 url = url,
                 author = author.name,

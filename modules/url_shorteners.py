@@ -32,13 +32,17 @@ class SLExpectOVH:
             "Referer": "https://www.whatdidyouexpect.eu/",
             "Referrer-Policy": "strict-origin-when-cross-origin"
         }
-        
+
     def shorten(self, url, timeout):
         try:
             response = requests.post(self.api, json={"url": url}, headers=self.headers, timeout=timeout)
             if response.status_code == 200:
-                json = response.json()
-                return json.get("short_url", url)
+                json: dict = response.json()
+                short_url: str = json.get("short_url", url)
+                if short_url == url:
+                    return url
+                else:
+                    return f"https://{short_url}" if short_url.startswith("sl.expect.ovh") else short_url
             else:
                 raise Exception("Error shortening URL.")
         except Exception as e:
@@ -64,12 +68,12 @@ class SLPowerPCFanXYZ:
         try:
             response = requests.post(self.api, json={"url": url}, headers=self.headers, timeout=timeout)
             if response.status_code == 200:
-                json = response.json()
-                short = json.get("short", url)
+                json: dict = response.json()
+                short: str = json.get("short", url)
                 if short == url:
-                    return short
+                    return url
                 else:
-                    return f"https://sl.powerpcfan.xyz{short}"
+                    return f"https://sl.powerpcfan.xyz{short}" if short.startswith("/s/") else short
             else:
                 raise Exception("Error shortening URL.")
         except Exception as e:

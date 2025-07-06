@@ -1,11 +1,11 @@
 from openai import OpenAI
 from typing import Optional
-
+from modules.config.configuration import config
 
 class OpenRouter:
-    def __init__(self, api_key=None):
+    def __init__(self):
         self.model = "mistralai/mistral-small-3.2-24b-instruct:free"
-        self.auth: Optional[str] = api_key
+        self.auth: Optional[str] = config.openrouter_api_key
 
     def llm(self, author_has_llm_query, author_wants_llm_query, title):
         prompt = (

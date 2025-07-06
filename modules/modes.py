@@ -21,7 +21,7 @@ def match(subreddit):
 
 def match_llm(subreddit):
     try:
-        openrouter = ai.OpenRouter(api_key=config.openrouter_api_key)
+        openrouter = ai.OpenRouter()
         
         for submission in subreddit.stream.submissions(skip_existing = not config.retrieve_older_posts):
             h, w = parse_have_want(submission.title)
