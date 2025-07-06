@@ -50,14 +50,14 @@ def create_embed(color: str, url: str, author: str, trades: str, have: str, want
 
 def send_webhook(webhook_url: str, content: Optional[str], embed: Optional[dict], username: Optional[str]):
     logger = Logger()
-
+    
     # Prepare the JSON payload
     json_data = {
         "content": content if content != None else "",
         "embeds": [embed] if embed != None else [],
         "username": username if username != None else ""
     }
-
+    
     # Send the webhook
     try:
         response = requests.post(webhook_url, json=json_data)

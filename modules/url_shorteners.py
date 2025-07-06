@@ -42,7 +42,7 @@ class SLExpectOVH:
                 if short_url == url:
                     return url
                 else:
-                    return f"https://{short_url}" if short_url.startswith("sl.expect.ovh") else short_url
+                    return f"https://{short_url}"
             else:
                 raise Exception("Error shortening URL.")
         except Exception as e:
@@ -73,7 +73,7 @@ class SLPowerPCFanXYZ:
                 if short == url:
                     return url
                 else:
-                    return f"https://sl.powerpcfan.xyz{short}" if short.startswith("/s/") else short
+                    return f"https://sl.powerpcfan.xyz{short}"
             else:
                 raise Exception("Error shortening URL.")
         except Exception as e:
