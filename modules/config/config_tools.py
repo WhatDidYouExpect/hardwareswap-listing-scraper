@@ -57,9 +57,6 @@ def ensure_all_values_are_present():
         "author_wants": [
             "PayPal"
         ],
-        "openrouter_api_key": "",
-        "author_has_llm_query": "",
-        "author_wants_llm_query": "",
         "retrieve_older_posts": False,
         "tinyurl": False,
         "sl_expect_ovh": False,
@@ -117,11 +114,6 @@ class Config:
 
     author_has: List[str]
     author_wants: List[str]
-    
-    openrouter_api_key: str
-    author_has_llm_query: str
-    author_wants_llm_query: str
-
     retrieve_older_posts: bool
     
     tinyurl: bool
